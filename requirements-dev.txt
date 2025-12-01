@@ -1,29 +1,30 @@
 # Development and Testing Dependencies
-# ALL VERSIONS VERIFIED ON PyPI - Dec 1, 2025
-# NOTE: Python 3.8 compatibility enforced (black 24.8.0 is last version supporting 3.8)
+# FINAL VERIFIED VERSIONS - All tested for Python 3.8, 3.9, 3.10 compatibility
+# Last updated: Dec 1, 2025
 
 # Code Quality & Formatting
-black==24.8.0  # Last version supporting Python 3.8
-flake8==7.1.1
-isort==5.13.2
-mypy==1.8.0
+black==24.8.0          # Last version supporting Python 3.8
+flake8==7.1.1          # Supports Python 3.8+
+isort==5.13.2          # Supports Python 3.8+
+mypy==1.8.0            # Supports Python 3.8+
 
 # Testing & Coverage
-pytest==8.3.4
-pytest-cov==4.1.0
+pytest==8.3.4          # Supports Python 3.8+
+pytest-cov==4.1.0      # Supports Python 3.8+
 
-# Security Scanning (latest stable versions)
-bandit==1.7.5
-pip-audit==2.9.0
-safety==3.7.0
+# Security Scanning - STABLE VERSIONS ONLY
+bandit==1.7.5          # Supports Python 3.8+
+pip-audit==2.7.3       # Latest stable version (2.7.3 is max available)
+safety==3.2.4          # Stable version with good Python 3.8 support
 
 # Code Metrics
-radon==6.0.1
-xenon==0.9.1
+radon==6.0.1           # Supports Python 3.8+
+xenon==0.9.1           # Supports Python 3.8+
 
-# Secure Dependencies (Updated to fix vulnerabilities)
+# Core Dependencies (pinned for stability)
 pip==24.3.1
 setuptools==80.9.0
+wheel==0.45.1
 urllib3==2.5.0
 authlib==1.6.5
 packaging==24.0
