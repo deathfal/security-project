@@ -1,8 +1,9 @@
 # Development and Testing Dependencies
 # ALL VERSIONS VERIFIED ON PyPI - Dec 1, 2025
+# NOTE: Python 3.8 compatibility enforced (black 24.8.0 is last version supporting 3.8)
 
 # Code Quality & Formatting
-black==25.11.0
+black==24.8.0  # Last version supporting Python 3.8
 flake8==7.1.1
 isort==5.13.2
 mypy==1.8.0
