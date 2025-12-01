@@ -1,5 +1,5 @@
 # Development and Testing Dependencies
-# FINAL VERIFIED VERSIONS - All tested for Python 3.8, 3.9, 3.10 compatibility
+# STABLE VERSIONS - All tested for Python 3.8, 3.9, 3.10 compatibility
 # Last updated: Dec 1, 2025
 
 # Code Quality & Formatting
@@ -14,17 +14,9 @@ pytest-cov==4.1.0      # Supports Python 3.8+
 
 # Security Scanning - STABLE VERSIONS ONLY
 bandit==1.7.5          # Supports Python 3.8+
-pip-audit==2.7.3       # Latest stable version (2.7.3 is max available)
+pip-audit==2.7.3       # Latest stable version
 safety==3.2.4          # Stable version with good Python 3.8 support
 
 # Code Metrics
 radon==6.0.1           # Supports Python 3.8+
 xenon==0.9.1           # Supports Python 3.8+
-
-# Core Dependencies (pinned for stability)
-pip==24.3.1
-setuptools==80.9.0
-wheel==0.45.1
-urllib3==2.5.0
-authlib==1.6.5
-packaging==24.0
