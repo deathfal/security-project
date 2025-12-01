@@ -1,0 +1,27 @@
+# Development and Testing Dependencies
+# Pinned to secure versions to prevent vulnerabilities
+
+# Code Quality & Formatting
+black==24.1.1
+flake8==7.0.0
+isort==5.13.2
+mypy==1.8.0
+
+# Testing & Coverage
+pytest==8.0.0
+pytest-cov==4.1.0
+
+# Security Scanning
+bandit==1.7.5
+pip-audit==2.6.1
+safety==2.3.5
+
+# Code Metrics
+radon==6.1.1
+xenon==0.9.1
+
+# Secure Dependencies (Updated to fix vulnerabilities)
+pip>=25.3
+setuptools>=78.1.1
+urllib3>=2.5.0
+authlib>=1.6.5
