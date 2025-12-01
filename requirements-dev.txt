@@ -1,8 +1,8 @@
 # Development and Testing Dependencies
-# Pinned to verified versions available on PyPI
+# Verified compatible versions - tested for dependency conflicts
 
 # Code Quality & Formatting
-black==25.9.0
+black==24.10.0
 flake8==7.1.1
 isort==5.13.2
 mypy==1.8.0
@@ -11,10 +11,10 @@ mypy==1.8.0
 pytest==8.3.4
 pytest-cov==4.1.0
 
-# Security Scanning
+# Security Scanning (compatible versions)
 bandit==1.7.5
-pip-audit==2.6.1
-safety==2.3.5
+pip-audit==2.4.0
+safety==3.0.1
 
 # Code Metrics
 radon==6.0.1
@@ -25,3 +25,4 @@ pip==24.3.1
 setuptools==80.9.0
 urllib3==2.5.0
 authlib==1.6.5
+packaging==24.0
