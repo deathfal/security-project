@@ -17,7 +17,7 @@ pip-audit==2.6.1
 safety==2.3.5
 
 # Code Metrics
-radon==6.1.1
+radon==6.0.1
 xenon==0.9.1
 
 # Secure Dependencies (Updated to fix vulnerabilities)
