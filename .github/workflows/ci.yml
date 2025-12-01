@@ -88,7 +88,7 @@ jobs:
       - name: pytest
         run: |
           # Bonus 5: Code coverage reporting with pytest-cov
-          pytest tests/ --cov=calculator --cov-report=xml --cov-report=html --cov-report=term-missing
+          pytest calculator/tests/ --cov=calculator --cov-report=xml --cov-report=html --cov-report=term-missing
 
       # Bonus 17: Build artifacts and reports storage
       - name: Upload coverage reports
