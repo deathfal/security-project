@@ -2,8 +2,7 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: 
       - master
   workflow_dispatch:
 
@@ -17,39 +16,108 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ["3.8", "3.9", "3.10"]
     
     steps:
       - name: checkout
         uses: actions/checkout@v5
-      
+
       - name: Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      
+
+      # Bonus 10: Pip dependency caching for faster builds
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+
       - name: dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flake8 pytest
-      
+          # Bonus dependencies for enhanced code quality and security
+          pip install pytest-cov bandit pip-audit mypy isort black safety
+
+      # Bonus 8: Code formatting validation with black
+      - name: Code formatting check with black
+        run: |
+          black --check --diff calculator/
+
+      # Bonus 7: Import sorting validation with isort
+      - name: Import sorting check with isort
+        run: |
+          isort --check-only --diff calculator/
+
+      # Bonus 6: Type checking with mypy
+      - name: Type checking with mypy
+        run: |
+          mypy calculator/ --ignore-missing-imports
+        continue-on-error: true
+
       - name: flake8
         run: |
+          # First run: stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Second run: exit-zero treats all errors as warnings
           flake8 . --count --exit-zero --statistics
-      
+
+      # Bonus 1: SAST (Static Application Security Testing) with bandit
+      - name: Security analysis with bandit
+        run: |
+          bandit -r calculator/ -f json -o bandit-report.json || true
+          bandit -r calculator/ -f txt
+
+      # Bonus 2: Dependency vulnerability scanning with pip-audit
+      - name: Dependency vulnerability scan with pip-audit
+        run: |
+          pip-audit --format=json --output=pip-audit-report.json || true
+          pip-audit
+
+      # Bonus 3: License compliance checking with safety
+      - name: Safety check for known security vulnerabilities
+        run: |
+          safety check --json --output safety-report.json || true
+          safety check
+
       - name: pytest
         run: |
-          cd calculator
-          pytest tests/
+          # Bonus 5: Code coverage reporting with pytest-cov
+          pytest tests/ --cov=calculator --cov-report=xml --cov-report=html --cov-report=term-missing
+
+      # Bonus 17: Build artifacts and reports storage
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.10'
+        with:
+          name: coverage-reports
+          path: |
+            htmlcov/
+            coverage.xml
+
+      # Bonus 17: Upload security reports
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.10'
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            pip-audit-report.json
+            safety-report.json
 
   trivy-scan:
     runs-on: ubuntu-latest
-    
     steps:
       - name: checkout
         uses: actions/checkout@v5
-      
+
+      # Bonus 4: Enhanced Trivy scanning with multiple output formats
       - name: trivy FS mode
         uses: aquasecurity/trivy-action@0.33.1
         with:
@@ -58,8 +126,73 @@ jobs:
           format: 'sarif'
           output: 'results.sarif'
           severity: 'CRITICAL,HIGH'
-      
+
+      # Bonus 24: Security scan results in multiple formats
+      - name: trivy FS mode - JSON format
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'json'
+          output: 'trivy-fs-report.json'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
+      # Bonus 24: Security scan results in table format for logs
+      - name: trivy FS mode - Table format
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
       - name: upload
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'results.sarif'
+
+      # Bonus 17: Upload Trivy reports
+      - name: Upload Trivy reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-reports
+          path: |
+            results.sarif
+            trivy-fs-report.json
+
+  # Bonus 16: Code quality metrics collection
+  code-quality-metrics:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+
+      - name: Python 3.10
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install radon xenon
+
+      # Bonus 16: Collect code complexity metrics
+      - name: Code complexity analysis
+        run: |
+          echo "=== Cyclomatic Complexity ===" > code-metrics.txt
+          radon cc calculator/ -a >> code-metrics.txt
+          echo -e "\n=== Maintainability Index ===" >> code-metrics.txt
+          radon mi calculator/ >> code-metrics.txt
+          echo -e "\n=== Raw Metrics ===" >> code-metrics.txt
+          radon raw calculator/ >> code-metrics.txt
+          cat code-metrics.txt
+
+      - name: Upload code metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-quality-metrics
+          path: code-metrics.txt

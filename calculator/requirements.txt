@@ -1,0 +1,3 @@
+# Production dependencies
+# Currently no external dependencies for the basic calculator
+# This file is here for future dependency management and Docker optimization
