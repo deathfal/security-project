@@ -1,0 +1,13 @@
+/* assets/styles/components/forms.css */
+
+.form-input {
+    @apply block w-full p-3 border rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-purple-500;
+}
+
+.form-label {
+    @apply block text-gray-300 mb-1;
+}
+
+.form-button {
+    @apply w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md hover:from-purple-600 hover:to-pink-600 transition;
+}

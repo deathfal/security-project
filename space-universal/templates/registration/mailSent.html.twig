@@ -1,0 +1,23 @@
+{# generate cool tailwind succeed email verif twig   #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Email Verification{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-screen text-white">
+    <div class="bg-gray-800 bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-600 mb-6">
+            Email Verification
+        </h1>
+        <p class="text-center text-gray-400 mb-6">
+            We have sent you an email to verify your email address. Please check your inbox and click on the link provided.
+        </p>
+        <p class="text-center text-gray-400 mb-6">
+            If you haven't received the email after a few minutes, please check your spam folder.
+        </p>
+        <p class="text-center text-gray-400">
+            <a href="{{ path('app_verify_resend_email') }}" class="text-purple-400 hover:text-purple-500">Resend Verification Email</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

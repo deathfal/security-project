@@ -1,0 +1,27 @@
+{# templates/admin/edit_category.html.twig #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Edit Category{% endblock %}
+
+{% block body %}
+<div class="max-w-2xl mx-auto bg-gray-800 shadow-md rounded-lg overflow-hidden">
+    <div class="px-6 py-4 bg-gray-700 border-b border-gray-600">
+        <h2 class="text-2xl font-bold text-white">Edit Category #{{ category.id }}</h2>
+    </div>
+    <form method="post" action="{{ path('admin_category_edit', {id: category.id}) }}" class="px-6 py-4 space-y-6">
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+            <input type="text" id="name" name="name" value="{{ category.name }}" class="w-full bg-gray-700 border border-gray-600 text-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3">
+        </div>
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+            <textarea id="description" name="description" class="w-full bg-gray-700 border border-gray-600 text-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3">{{ category.description }}</textarea>
+        </div>
+        <div class="flex justify-end">
+            <a href="{{ path('admin_categories') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2 transition duration-150 ease-in-out">Cancel</a>
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

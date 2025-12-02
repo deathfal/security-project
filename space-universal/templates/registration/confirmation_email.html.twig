@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome!</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333;">
+    <table align="center" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <!-- Header -->
+        <tr>
+            <td align="center" style="background-color: #4f46e5; padding: 20px;">
+                <h1 style="margin: 0; font-size: 24px; font-weight: bold; color: #ffffff;">Welcome to Space Universal!</h1>
+            </td>
+        </tr>
+        <!-- Body -->
+        <tr>
+            <td style="padding: 30px; line-height: 1.6;">
+                <p style="font-size: 18px; margin: 0 0 20px;">Hi there!</p>
+                <p style="margin: 0 0 20px;">Please confirm your email address by clicking the button below:</p>
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="{{ signedUrl|raw }}" style="display: inline-block; background-color: #4f46e5; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold; padding: 12px 24px; border-radius: 6px;">
+                        Confirm my Email
+                    </a>
+                </p>
+                <p style="margin: 0 0 20px;">This link will expire on <strong>{{ expiresAt|date('F j, Y, g:i a') }}</strong>.</p>
+                <p style="margin: 0;">Cheers,<br>The Space Universal Team</p>
+            </td>
+        </tr>
+        <!-- Footer -->
+        <tr>
+            <td align="center" style="background-color: #f4f4f4; padding: 20px; font-size: 14px; color: #888;">
+                <p style="margin: 0;">&copy; {{ "now"|date("Y") }} Space Universal. All rights reserved.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

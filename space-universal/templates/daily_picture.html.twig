@@ -1,0 +1,23 @@
+{# templates/daily_picture.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Daily Picture - Cosmic Bazaar{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-900 bg-opacity-80 bg-cover bg-center bg-fixed" style="background-image: url('{{ asset('img/background/pyro_background.png') }}');">
+    <div class="container mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-white mb-8 text-center glow">{{ image.title }}</h1>
+        <div class="max-w-4xl mx-auto bg-gray-800 bg-opacity-70 rounded-lg shadow-neon p-8 backdrop-blur-sm">
+            {% if 'youtube.com' in image.url %}
+                <div class="video-responsive">
+                    <iframe src="{{ image.url }}" title="{{ image.title }}" class="w-full h-96 rounded-lg mb-6" frameborder="0" allowfullscreen></iframe>
+                </div>
+            {% else %}
+                <img src="{{ image.url }}" alt="{{ image.title }}" class="w-full h-auto rounded-lg mb-6">
+            {% endif %}
+            <p class="text-indigo-300 mb-4">{{ image.date }}</p>
+            <p class="text-white">{{ image.explanation }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

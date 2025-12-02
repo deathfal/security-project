@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cosmic Bazaar{% endblock %}</title>
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+</head>
+<body class="flex flex-col min-h-screen">
+
+<header id="main-header" class="bg-gray-800 text-white w-full z-40 fixed top-0 left-0 transition-all duration-300">
+    <div class="container relative mx-auto min-h-20 flex gap-4 flex-row lg:grid lg:grid-cols-3 items-center">
+        <div class="justify-start items-center gap-4 lg:flex hidden flex-row">
+            <nav class="flex justify-start items-start">
+                <ul class="flex justify-start gap-4 flex-row">
+                    <li>
+                        <a href="{{ path('app_home') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-white">Home</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_products') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-white">Products</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('daily_picture') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-white">Daily Picture</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('contact') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-white">Contact</a>
+                    </li>
+                    {% if app.user %}
+                    <li>
+                        <a href="{{ path('app_wallet_index') }}" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Wallet
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        <div class="flex lg:justify-center">
+            <a href="{{ path('app_home') }}" class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+                Cosmic-Bazaar
+            </a>
+        </div>
+        <div class="flex justify-end w-full gap-4 items-center">
+            <a href="{{ path('app_shopping_basket') }}" class="flex items-center text-white hover:text-purple-400 transition-colors duration-200 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {% if app.session.get('cart')|default([])|length > 0 %}
+                    <span class="ml-1">{{ app.session.get('cart')|default([])|length }}</span>
+                {% endif %}
+            </a>
+            {% if app.user %}
+                {# Wallet Balance Dropdown #}
+                <div class="relative mr-4">
+                    <button id="wallet-menu-button" class="flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-green-400 px-3 py-1.5 rounded-full transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        {% set wallets = user_wallets() %}
+                        {% set displayCurrency = app.session.get('display_currency', wallets[0].currency|default('SPACE-COINS')) %}
+                        {% for wallet in wallets %}
+                            {% if wallet.currency == displayCurrency %}
+                                <span>{{ wallet.balance|format_balance(wallet.currency) }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </button>
+                    <div id="wallet-menu" class="absolute right-0 w-64 py-2 mt-2 bg-gray-700 rounded-md shadow-xl z-20 hidden">
+                        {% if wallets|length > 0 %}
+                            {% for wallet in wallets %}
+                                <button onclick="selectCurrency('{{ wallet.currency }}', '{{ wallet.balance|format_balance(wallet.currency) }}')" 
+                                        class="w-full px-4 py-2 text-sm text-white hover:bg-gray-600 flex justify-between items-center cursor-pointer">
+                                    <span class="text-gray-300">{{ wallet.currency }}</span>
+                                    <span class="font-medium text-green-400">{{ wallet.balance|format_balance(wallet.currency) }}</span>
+                                </button>
+                            {% endfor %}
+                        {% else %}
+                            <div class="px-4 py-2 text-sm text-gray-400">No wallets found</div>
+                        {% endif %}
+                        <div class="border-t border-gray-600 my-1"></div>
+                        <a href="{{ path('app_wallet_index') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">
+                            Manage Wallets
+                        </a>
+                    </div>
+                </div>
+
+                {# Profile Dropdown #}
+                <div class="relative">
+                    <button id="profile-menu-button" class="flex items-center focus:outline-none">
+                        <img src="{{ asset(app.user.avatarUrl ?: 'img/avatars/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                    </button>
+                    <div id="profile-menu" class="absolute right-0 w-48 py-2 bg-gray-700 rounded-md shadow-xl z-20 hidden">
+                        <a href="{{ path('app_profile') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Settings</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('admin_dashboard') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Admin</a>
+                        {% endif %}
+                        <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-white">Log in</a>
+                <a href="{{ path('app_register') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-purple-600 hover:bg-purple-700">Register</a>
+            {% endif %}
+        </div>
+        <div class="flex w-12 shrink lg:hidden items-end justify-end">
+            <button id="mobile-menu-toggle" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </div>
+    <div id="mobile-menu" class="lg:hidden hidden">
+        <div class="absolute top-20 border-t flex flex-col w-full right-0 bg-gray-800 shadow-lg py-4 container gap-8">
+            <a href="{{ path('app_home') }}" class="flex justify-between items-center text-white">
+                <span class="text-lg">Home</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 stroke-1 text-muted-foreground"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="#" class="flex justify-between items-center text-white">
+                <span class="text-lg">Products</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 stroke-1 text-muted-foreground"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="{{ path('daily_picture') }}" class="flex justify-between items-center text-white">
+                <span class="text-lg">Daily Picture</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 stroke-1 text-muted-foreground"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="{{ path('contact') }}" class="flex justify-between items-center text-white">
+                <span class="text-lg">Contact</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 stroke-1 text-muted-foreground"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow pt-20">
+    {% block body %}{% endblock %}
+    {% include 'partials/_toasts.html.twig' %}
+</main>
+
+<footer class="bg-gray-800 text-white py-8 mt-auto">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                <p class="text-gray-400">Your premier destination for cosmic treasures and celestial artifacts.</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="{{ path('app_home') }}" class="text-gray-400 hover:text-white">Home</a></li>
+                    <li><a href="{{ path('app_products') }}" class="text-gray-400 hover:text-white">Products</a></li>
+                    <li><a href="{{ path('contact') }}" class="text-gray-400 hover:text-white">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                <ul class="space-y-2 text-gray-400">
+                    <li>Email: contact@cosmic-bazaar.com</li>
+                    <li>Phone: +1 (555) 123-4567</li>
+                    <li>Address: 123 Cosmic Street, Space Station Alpha</li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+            <p>&copy; {{ "now"|date("Y") }} Cosmic Bazaar. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+</body>
+</html>

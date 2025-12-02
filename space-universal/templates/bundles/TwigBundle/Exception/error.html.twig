@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Error{% endblock %}
+
+{% block body %}
+    <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 text-center">
+            <div>
+                <h1 class="text-9xl font-extrabold text-gray-500">{{ status_code }}</h1>
+                <h2 class="mt-6 text-3xl font-bold text-gray-900">{{ status_text }}</h2>
+                <p class="mt-4 text-lg text-gray-600">
+                    {% if exception.message %}
+                        {{ exception.message|nl2br|raw }}
+                    {% else %}
+                        An unexpected error has occurred.
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <a href="{{ path('app_home') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                    Back to Homepage
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

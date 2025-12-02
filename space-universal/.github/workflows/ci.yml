@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch: ~
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/adam/space-universal
+            echo "Switching to SSH remote..."
+            git remote set-url origin git@github.com:deathfal/space-universal.git
+            echo "Current remote URL:"
+            git remote -v
+            echo "Fetching updates..."
+            git fetch origin master
+            echo "Resetting to origin/master..."
+            git reset --hard origin/master
+            
+            # Build and start containers
+            docker compose build apache
+            docker compose up -d apache database mailer
+            
+            # Wait for database to be ready
+            echo "Waiting for database to be ready..."
+            sleep 5
+            
+            # Fix permissions using docker
+            echo "Fixing permissions..."
+            docker compose exec -T apache chown -R www-data:www-data /var/www/space-universal
+            docker compose exec -T apache find /var/www/space-universal -type f -exec chmod 644 {} \;
+            docker compose exec -T apache find /var/www/space-universal -type d -exec chmod 755 {} \;
+            docker compose exec -T apache chmod -R 777 /var/www/space-universal/var
+            docker compose exec -T apache chmod -R 777 /var/www/space-universal/public
+            
+            # Clear cache and warmup
+            echo "Clearing cache..."
+            docker compose exec -T apache php bin/console cache:clear
+            docker compose exec -T apache php bin/console cache:warmup
+            
+            # Create/update database schema
+            echo "Creating database schema..."
+            docker compose exec -T apache php bin/console doctrine:schema:drop --force --full-database
+            docker compose exec -T apache php bin/console doctrine:schema:create
+            
+            # Run database migrations
+            echo "Running database migrations..."
+            docker compose exec -T apache php bin/console doctrine:migrations:migrate --no-interaction
+
+            # Run PHPStan analysis
+            echo "Running PHPStan..."
+            docker compose exec -T php composer phpstan -- --memory-limit=512M
+
+            # Run PHPUnit tests
+            echo "Running PHPUnit tests..."
+            docker compose exec -T php php bin/phpunit
+            
+            # Load fixtures
+            echo "Loading fixtures..."
+            docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
+            
+            # Check code style
+            echo "Checking code style..."
+            docker compose exec php vendor/bin/phpcs

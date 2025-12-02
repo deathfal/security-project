@@ -1,0 +1,38 @@
+{
+  "name": "space-universal",
+  "version": "1.0.0",
+  "description": "A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework, with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+"scripts": {
+  "dev": "npm-run-all --parallel dev:tailwind dev:webpack",
+  "dev:tailwind": "tailwindcss -i ./assets/styles/app.css -o ./public/build/app.css --watch",
+  "dev:webpack": "encore dev --watch",
+  "build": "npm-run-all build:tailwind build:webpack",
+  "build:tailwind": "tailwindcss -i ./assets/styles/app.css -o ./public/build/app.css --minify",
+  "build:webpack": "encore production"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@symfony/webpack-encore": "^5.0.1",
+    "autoprefixer": "^10.4.20",
+    "babel-loader": "^9.2.1",
+    "core-js": "^3.40.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.49",
+    "postcss-loader": "^8.1.1",
+    "sass": "^1.83.1",
+    "sass-loader": "^16.0.4",
+    "tailwindcss": "^3.4.17",
+    "webpack-notifier": "^1.15.0"
+  },
+  "dependencies": {
+    "three": "^0.172.0"
+  }
+}

@@ -1,0 +1,15 @@
+/* assets/styles/app.css */
+
+/* Base styles */
+@import './base.css';
+
+/* Components */
+@import './components/header.css';
+@import './components/forms.css';
+
+/* Layouts */
+@import './layouts/login.css';
+
+/* Tailwind utilities */
+@tailwind components;
+@tailwind utilities;

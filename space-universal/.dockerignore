@@ -1,0 +1,29 @@
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+
+# Git and GitHub
+.git
+.github/
+
+# Node modules (if you use Node)
+node_modules/
+
+# Symfony build artifacts
+var/cache/
+var/log/
+
+# Vendor (if we do composer install in Dockerfile)
+vendor/
+
+# Docker & Compose files
+docker-compose.yml
+docker-compose.yaml
+*.dockerfile
+
+# If you keep your Dockerfile in the root, do NOT ignore it
+#**/Dockerfile
+
+# Tests, docs
+tests/
+docs/

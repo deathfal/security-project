@@ -1,0 +1,54 @@
+{# templates/contact.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact - Cosmic Bazaar{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-900 bg-opacity-80 bg-cover bg-center bg-fixed" style="background-image: url('{{ asset('img/background/bloom_background.webp') }}');">
+    <div class="container mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-white mb-8 text-center glow">Contactez-nous</h1>
+        <div class="max-w-4xl mx-auto bg-gray-800 bg-opacity-70 rounded-lg shadow-neon p-8 backdrop-blur-sm">
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">Adresse</h2>
+                    <p class="text-indigo-300">Cosmic Bazaar</p>
+                    <p class="text-indigo-300">123 Rue de l'Espace</p>
+                    <p class="text-indigo-300">75000 Paris, France</p>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">Téléphone</h2>
+                    <p class="text-indigo-300">+33 1 23 45 67 89</p>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">Email</h2>
+                    <p class="text-indigo-300">contact@cosmicbazaar.com</p>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">Réseaux Sociaux</h2>
+                    <p class="text-indigo-300">
+                        <a href="#" class="text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out">Twitter</a>
+                    </p>
+                    <p class="text-indigo-300">
+                        <a href="#" class="text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out">Facebook</a>
+                    </p>
+                    <p class="text-indigo-300">
+                        <a href="#" class="text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out">Instagram</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .glow {
+        text-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
+    }
+    .shadow-neon {
+        box-shadow: 0 0 15px rgba(167, 139, 250, 0.5);
+    }
+</style>
+{% endblock %}

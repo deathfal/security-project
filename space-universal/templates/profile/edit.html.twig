@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+{% import 'partials/_toasts.html.twig' as toasts %}
+
+{% block title %}Modifier le Profil Cosmique - Cosmic Bazaar{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-900 bg-opacity-80 bg-cover bg-center bg-fixed" style="background-image: url('{{ asset('img/background/obituary_background.png') }}');">
+    <div class="container mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-white mb-8 text-center glow">Modifier le Profil Cosmique</h1>
+
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-gray-800 bg-opacity-70 rounded-lg shadow-neon p-8 backdrop-blur-sm">
+                <form method="post" action="{{ path('app_profile_edit') }}" enctype="multipart/form-data" class="space-y-6" id="profile-edit-form">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-indigo-300">Nom d'utilisateur</label>
+                        <input type="text" id="username" name="username" value="{{ user.username }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-indigo-300">Email</label>
+                        <input type="email" id="email" name="email" value="{{ user.email }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    </div>
+
+                    <div>
+                        <label for="avatar" class="block text-sm font-medium text-indigo-300">Télécharger un avatar</label>
+                        <input type="file" id="avatar" name="avatar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">
+                    </div>
+
+                    <div>
+                        <label for="plainPassword" class="block text-sm font-medium text-indigo-300">Nouveau mot de passe</label>
+                        <input type="password" id="plainPassword" name="plainPassword" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    </div>
+
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-indigo-300">Confirmer le nouveau mot de passe</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 glow">
+                            Sauvegarder les Modifications
+                        </button>
+                        <a href="{{ path('app_profile') }}" class="text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Include toasts #}
+{{ toasts.success('Profil mis à jour avec succès !') }}
+{{ toasts.error('Une erreur est survenue lors de la mise à jour du profil.') }}
+{{ toasts.warning('Les mots de passe ne correspondent pas.') }}
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('profile-edit-form');
+    const passwordField = document.getElementById('plainPassword');
+    const confirmPasswordField = document.getElementById('confirmPassword');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Check if passwords match
+        if (passwordField.value !== confirmPasswordField.value) {
+            showToast('toast-warning');
+            return;
+        }
+
+        // Simulate form submission (replace with actual AJAX call)
+        setTimeout(function() {
+            const success = Math.random() < 0.8; // 80% chance of success for demonstration
+            if (success) {
+                showToast('toast-success');
+            } else {
+                showToast('toast-error');
+            }
+        }, 1000);
+    });
+
+    function showToast(id) {
+        const toast = document.getElementById(id);
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .glow {
+        text-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
+    }
+    .shadow-neon {
+        box-shadow: 0 0 15px rgba(167, 139, 250, 0.5);
+    }
+</style>
+{% endblock %}

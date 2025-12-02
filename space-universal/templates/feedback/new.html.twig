@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Share Your Feedback - Space Universal{% endblock %}
+
+{% block body %}
+    <div class="min-h-screen bg-gray-50 py-12">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="text-center mb-8">
+                        <h1 class="text-3xl font-extrabold text-gray-900">
+                            Share Your Experience
+                        </h1>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Your feedback helps us improve and helps others make informed decisions
+                        </p>
+                    </div>
+
+                    {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                        <div class="space-y-4">
+                            {{ form_row(form.comment) }}
+                        </div>
+
+                        <div class="flex justify-end mt-6">
+                            <a href="{{ path('app_home') }}" 
+                               class="mr-4 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Cancel
+                            </a>
+                            <button type="submit" 
+                                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Submit Feedback
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

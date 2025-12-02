@@ -1,0 +1,141 @@
+{# templates/admin/dashboard.html.twig #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+<h2 class="text-3xl font-bold mb-4">Dashboard</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Total Revenue</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="text-2xl font-bold">${{ total_revenue|number_format(2) }}</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Total Users</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="text-2xl font-bold">{{ total_users }}</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Products in Stock</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <div class="text-2xl font-bold">{{ products_in_stock }}</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Total Sales</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="text-2xl font-bold">{{ total_sales }}</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-lg font-bold mb-4">Revenue par mois</h3>
+        <div id="revenue-chart" class="w-full h-80"></div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-lg font-bold mb-4">Produits par catégorie</h3>
+        <div id="category-chart" class="w-full h-80"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const margin = {top: 20, right: 20, bottom: 40, left: 60};
+    const width = 600 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+
+    const revenueData = {{ revenue_data|json_encode|raw }};
+    
+    const svg = d3.select("#revenue-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleBand()
+        .range([0, width])
+        .padding(0.1);
+
+    const y = d3.scaleLinear()
+        .range([height, 0]);
+
+    x.domain(revenueData.map(d => new Date(d.month).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })));
+    y.domain([0, d3.max(revenueData, d => d.revenue)]);
+
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end");
+
+    svg.append("g")
+        .call(d3.axisLeft(y));
+
+    svg.selectAll("rect")
+        .data(revenueData)
+        .enter()
+        .append("rect")
+        .attr("x", d => x(new Date(d.month).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })))
+        .attr("y", d => y(d.revenue))
+        .attr("width", x.bandwidth())
+        .attr("height", d => height - y(d.revenue))
+        .attr("fill", "#9333ea");
+
+    const categoryData = {{ products_by_category|json_encode|raw }};
+    console.log('Données des catégories:', categoryData); // Pour déboguer
+
+    const catSvg = d3.select("#category-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const catX = d3.scaleBand()
+        .range([0, width])
+        .padding(0.1);
+
+    const catY = d3.scaleLinear()
+        .range([height, 0]);
+
+    catX.domain(categoryData.map(d => d.category));
+    catY.domain([0, d3.max(categoryData, d => Number(d.count))]);
+
+    catSvg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(catX))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end");
+
+    catSvg.append("g")
+        .call(d3.axisLeft(catY));
+
+    catSvg.selectAll("rect")
+        .data(categoryData)
+        .enter()
+        .append("rect")
+        .attr("x", d => catX(d.category))
+        .attr("y", d => catY(Number(d.count)))
+        .attr("width", catX.bandwidth())
+        .attr("height", d => height - catY(Number(d.count)))
+        .attr("fill", "#4f46e5");
+});
+</script>
+{% endblock %}

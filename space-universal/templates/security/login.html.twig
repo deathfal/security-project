@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('build/cosmic-background.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div id="cosmic-background" class="absolute inset-0 z-0 w-full h-full"></div>
+
+<div class="relative flex items-center justify-center min-h-screen text-white">
+    <!-- Login Form -->
+    <div class="relative z-10 bg-gray-800 bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-md">
+        {% if error %}
+            <div class="alert alert-danger bg-red-500 text-white p-3 rounded-md">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="mb-3 text-center">
+                You are logged in as {{ app.user.userIdentifier }}, 
+                <a href="{{ path('app_logout') }}" class="text-purple-400 hover:text-purple-500">Logout</a>
+            </div>
+        {% endif %}
+
+        <h1 class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-600 mb-6">
+            Access Your Cosmic Account
+        </h1>
+        <form method="POST" class="space-y-6">
+            <div>
+                <label for="username" class="block text-gray-300 mb-1">Email</label>
+                <input type="email" id="username" name="_username" value="{{ last_username }}" 
+                       class="w-full p-3 bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500" 
+                       autocomplete="email" required autofocus>
+            </div>
+            <div>
+                <label for="password" class="block text-gray-300 mb-1">Password</label>
+                <input type="password" id="password" name="_password" 
+                       class="w-full p-3 bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500" 
+                       autocomplete="current-password" required>
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md hover:from-purple-600 hover:to-pink-600 transition">
+                Sign In
+            </button>
+        </form>
+        <p class="text-center text-gray-400 mt-4">
+            Don't have an account? <a href="{{ path('app_register') }}" class="text-purple-400 hover:text-purple-500">Sign Up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
