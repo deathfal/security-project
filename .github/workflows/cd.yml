@@ -1,0 +1,42 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - master
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: login
+        uses: docker/login-action@v3
+        with:
+          registry: reg.sector16.uk
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: build and push
+        uses: docker/build-push-action@v6
+        id: push
+        with:
+          context: calculator/
+          file: calculator/Dockerfile
+          push: true
+          tags: |
+            reg.sector16.uk/calculator:latest
+            reg.sector16.uk/calculator:${{ github.event.workflow_run.head_commit.id | truncate(7) }}
