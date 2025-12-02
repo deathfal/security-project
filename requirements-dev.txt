@@ -13,6 +13,7 @@ pytest==8.3.4          # Supports Python 3.8+
 pytest-cov==4.1.0      # Supports Python 3.8+
 
 # Security Scanning - STABLE VERSIONS ONLY
+pbr>=5.0               # Required by bandit
 bandit==1.7.5          # Supports Python 3.8+
 pip-audit==2.7.3       # Latest stable version
 safety==3.2.4          # Stable version with good Python 3.8 support
