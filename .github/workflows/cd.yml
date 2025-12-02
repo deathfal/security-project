@@ -55,8 +55,8 @@ jobs:
         uses: docker/build-push-action@v6
         id: push-space-universal
         with:
-          context: space-universal/
-          file: space-universal/Dockerfile
+          context: ./space-universal
+          file: ./space-universal/Dockerfile
           push: true
           target: frankenphp_prod
           tags: |
