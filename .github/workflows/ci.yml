@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10"]
@@ -112,7 +112,7 @@ jobs:
             safety-report.json
 
   trivy-scan:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     steps:
       - name: checkout
         uses: actions/checkout@v5
@@ -162,7 +162,7 @@ jobs:
 
   # Bonus 16: Code quality metrics collection
   code-quality-metrics:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     needs: test
     if: always()
     
