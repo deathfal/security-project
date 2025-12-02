@@ -20,7 +20,7 @@ jobs:
     
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
@@ -75,7 +75,7 @@ jobs:
 
       # Bonus CD-3: Upload build artifacts
       - name: Upload build metadata
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: docker-build-metadata
           path: |
