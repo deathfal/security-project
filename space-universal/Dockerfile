@@ -100,6 +100,3 @@ RUN set -eux; \
 	composer dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync;
-
-# Ajoutez cette ligne pour installer l'extension pdo_pgsql
-RUN docker-php-ext-install pdo_pgsql
