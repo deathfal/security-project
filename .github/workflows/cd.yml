@@ -34,6 +34,9 @@ jobs:
         id: short-sha
         run: echo "sha_short=$(echo ${{ github.event.workflow_run.head_sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: build and push
         uses: docker/build-push-action@v6
         id: push
@@ -44,8 +47,6 @@ jobs:
           tags: |
             reg.sector16.uk/calculator:latest
             reg.sector16.uk/calculator:${{ steps.short-sha.outputs.sha_short }}
-          cache-from: type=registry,ref=reg.sector16.uk/calculator:buildcache
-          cache-to: type=registry,ref=reg.sector16.uk/calculator:buildcache,mode=max
 
       # Bonus CD-1: Build summary and logging
       - name: Build summary
