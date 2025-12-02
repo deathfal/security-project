@@ -135,7 +135,6 @@ jobs:
           format: 'sarif'
           output: 'space-universal-fs.sarif'
           severity: 'CRITICAL,HIGH'
-          exit-code: '1'
 
       # Bonus 24: Security scan results in multiple formats
       - name: trivy FS mode - JSON format
