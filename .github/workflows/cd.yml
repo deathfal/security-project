@@ -1,0 +1,80 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - master
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: login
+        uses: docker/login-action@v3
+        with:
+          registry: reg.sector16.uk
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Get short SHA
+        id: short-sha
+        run: echo "sha_short=$(echo ${{ github.event.workflow_run.head_sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: build and push
+        uses: docker/build-push-action@v6
+        id: push
+        with:
+          context: calculator/
+          file: calculator/Dockerfile
+          push: true
+          tags: |
+            reg.sector16.uk/calculator:latest
+            reg.sector16.uk/calculator:${{ steps.short-sha.outputs.sha_short }}
+          cache-from: type=registry,ref=reg.sector16.uk/calculator:buildcache
+          cache-to: type=registry,ref=reg.sector16.uk/calculator:buildcache,mode=max
+
+      # Bonus CD-1: Build summary and logging
+      - name: Build summary
+        run: |
+          echo "=== Docker Build Summary ===" 
+          echo "Image: reg.sector16.uk/calculator"
+          echo "Tags: latest, ${{ steps.short-sha.outputs.sha_short }}"
+          echo "Digest: ${{ steps.push.outputs.digest }}"
+          echo "Build completed successfully!"
+
+      # Bonus CD-2: Scan built image with Trivy
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: reg.sector16.uk/calculator:${{ steps.short-sha.outputs.sha_short }}
+          format: 'sarif'
+          output: 'trivy-image-scan.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy image scan
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-image-scan.sarif'
+          category: 'trivy-image-scan'
+
+      # Bonus CD-3: Upload build artifacts
+      - name: Upload build metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-build-metadata
+          path: |
+            trivy-image-scan.sarif
