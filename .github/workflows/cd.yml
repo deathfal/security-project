@@ -38,9 +38,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: build and push
+      # Build Calculator Image
+      - name: build and push Calculator
         uses: docker/build-push-action@v6
-        id: push
+        id: push-calculator
         with:
           context: calculator/
           file: calculator/Dockerfile
@@ -49,29 +50,60 @@ jobs:
             reg.sector16.uk/calculator:latest
             reg.sector16.uk/calculator:${{ steps.short-sha.outputs.sha_short }}
 
+      # Build Space Universal Image
+      - name: build and push Space Universal
+        uses: docker/build-push-action@v6
+        id: push-space-universal
+        with:
+          context: space-universal/
+          file: space-universal/Dockerfile
+          push: true
+          target: frankenphp_prod
+          tags: |
+            reg.sector16.uk/space-universal:latest
+            reg.sector16.uk/space-universal:${{ steps.short-sha.outputs.sha_short }}
+
       # Bonus CD-1: Build summary and logging
       - name: Build summary
         run: |
           echo "=== Docker Build Summary ===" 
-          echo "Image: reg.sector16.uk/calculator"
-          echo "Tags: latest, ${{ steps.short-sha.outputs.sha_short }}"
-          echo "Digest: ${{ steps.push.outputs.digest }}"
+          echo "Calculator Image: reg.sector16.uk/calculator"
+          echo "  Tags: latest, ${{ steps.short-sha.outputs.sha_short }}"
+          echo "  Digest: ${{ steps.push-calculator.outputs.digest }}"
+          echo ""
+          echo "Space Universal Image: reg.sector16.uk/space-universal"
+          echo "  Tags: latest, ${{ steps.short-sha.outputs.sha_short }}"
+          echo "  Digest: ${{ steps.push-space-universal.outputs.digest }}"
           echo "Build completed successfully!"
 
-      # Bonus CD-2: Scan built image with Trivy
-      - name: Scan Docker image with Trivy
+      # Bonus CD-2: Scan built images with Trivy
+      - name: Scan Calculator image with Trivy
         uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: reg.sector16.uk/calculator:${{ steps.short-sha.outputs.sha_short }}
           format: 'sarif'
-          output: 'trivy-image-scan.sarif'
+          output: 'trivy-calculator-image.sarif'
           severity: 'CRITICAL,HIGH'
 
-      - name: Upload Trivy image scan
+      - name: Scan Space Universal image with Trivy
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: reg.sector16.uk/space-universal:${{ steps.short-sha.outputs.sha_short }}
+          format: 'sarif'
+          output: 'trivy-space-universal-image.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Calculator image scan
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: 'trivy-image-scan.sarif'
-          category: 'trivy-image-scan'
+          sarif_file: 'trivy-calculator-image.sarif'
+          category: 'trivy-calculator-image'
+
+      - name: Upload Space Universal image scan
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-space-universal-image.sarif'
+          category: 'trivy-space-universal-image'
 
       # Bonus CD-3: Upload build artifacts
       - name: Upload build metadata
@@ -79,4 +111,5 @@ jobs:
         with:
           name: docker-build-metadata
           path: |
-            trivy-image-scan.sarif
+            trivy-calculator-image.sarif
+            trivy-space-universal-image.sarif

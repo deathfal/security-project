@@ -117,14 +117,23 @@ jobs:
       - name: checkout
         uses: actions/checkout@v5
 
-      # Bonus 4: Enhanced Trivy scanning with multiple output formats
-      - name: trivy FS mode
+      # Bonus 4: Enhanced Trivy scanning with multiple output formats - Calculator
+      - name: trivy FS mode - Calculator
         uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: './calculator'
           format: 'sarif'
-          output: 'results.sarif'
+          output: 'calculator-fs.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: trivy FS mode - Space Universal
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          scan-ref: './space-universal'
+          format: 'sarif'
+          output: 'space-universal-fs.sarif'
           severity: 'CRITICAL,HIGH'
 
       # Bonus 24: Security scan results in multiple formats
@@ -146,10 +155,17 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH,MEDIUM'
 
-      - name: upload
+      - name: upload Calculator SARIF
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: 'results.sarif'
+          sarif_file: 'calculator-fs.sarif'
+          category: 'trivy-calculator'
+
+      - name: upload Space Universal SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'space-universal-fs.sarif'
+          category: 'trivy-space-universal'
 
       # Bonus 17: Upload Trivy reports
       - name: Upload Trivy reports
@@ -157,7 +173,8 @@ jobs:
         with:
           name: trivy-reports
           path: |
-            results.sarif
+            calculator-fs.sarif
+            space-universal-fs.sarif
             trivy-fs-report.json
 
   # Bonus 16: Code quality metrics collection
