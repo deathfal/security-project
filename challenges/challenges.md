@@ -116,3 +116,30 @@ curl -X POST "http://challenge01.root-me.org/web-serveur/ch53/index.php" -d "ip=
 Nous pouvons voir que le mot de passe est bien récupéré.
 
 <img src="img/Injection de commande - Contournement de filtre 4.png" alt="capture 18" width="400">
+
+# 9. API - Mass Assignment
+Link: https://www.root-me.org/fr/Challenges/Web-Serveur/API-Mass-Assignment?lang=fr
+
+Pour réaliser ce projet, j'ai commencé par analyser la documentation Swagger de l'API pour identifier les endpoints disponibles.
+
+Les endpoints identifiés sont :
+- POST /api/signup - Création d'utilisateur (accepte: username, password)
+- POST /api/login - Connexion (accepte: username, password)
+- GET /api/user - Récupération des informations utilisateur (retourne: id, username, note, status)
+- PUT /api/note - Mise à jour de la note (accepte: note)
+- GET /api/flag - Récupération du flag (nécessite le statut admin)
+
+J'ai d'abord testé plusieurs tentatives d'injection de paramètres supplémentaires lors de l'inscription et de la modification de la note, mais ces endpoints filtraient correctement les champs non autorisés.
+
+Après avoir testé différentes méthodes HTTP sur l'endpoint /api/user, j'ai découvert qu'une méthode PUT non documentée était disponible.
+
+J'ai créé un compte utilisateur standard et me suis connecté pour obtenir une session.
+
+Ensuite, j'ai envoyé une requête PUT vers /api/user avec le corps suivant :
+{"status":"admin"}
+
+Cette requête a été acceptée et mon statut utilisateur a été modifié en admin.
+
+J'ai ensuite pu accéder à l'endpoint /api/flag pour récupérer le flag de validation.
+
+Le flag obtenu confirme la vulnérabilité : la documentation Swagger ne montrait que la méthode GET pour /api/user, mais la méthode PUT était disponible et vulnérable à l'injection de masse sans validation appropriée des champs status.
