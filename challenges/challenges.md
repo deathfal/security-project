@@ -1,3 +1,14 @@
+## Sommaire
+- [1. File path traversal - Null byte bypass](#1-file-path-traversal---null-byte-bypass)
+- [2. PHP - Filters](#2-php---filters)
+- [3. CSRF - Contournement de jeton](#3-csrf---contournement-de-jeton)
+- [4. CSRF where token is not tied to user session](#4-csrf-where-token-is-not-tied-to-user-session)
+- [5. CSRF where Referer validation depends on header being present](#5-csrf-where-referer-validation-depends-on-header-being-present)
+- [6. JWT - Jeton révoqué](#6-jwt---jeton-révoqué)
+- [7. SQL injection - Error](#7-sql-injection---error)
+- [8. Injection de commande - Contournement de filtre](#8-injection-de-commande---contournement-de-filtre)
+- [10. Server-side template injection (unknown language)](#10-server-side-template-injection-unknown-language)
+
 # 1. File path traversal - Null byte bypass
 Link: https://portswigger.net/web-security/file-path-traversal/lab-validate-file-extension-null-byte-bypass
 
@@ -64,7 +75,7 @@ Pour contourner la protection, on utilise un script qui récupère la page de pr
 # 4. CSRF where token is not tied to user session
 Link: https://portswigger.net/web-security/csrf/lab-token-not-tied-to-user-session
 
-Le token CSRF n'étant pas lié à la session, j'ai intercepté une requête de changement d'e-mail légitime avec un premier compte, récupéré la valeur du champ `csrf`, puis drop la requête. Après m'être connecté avec un autre compte, j'ai répété l'action et remplacé la valeur du token par celle enregistrée : le serveur a accepté la modification car il ne valide pas l'association token/session. J'ai encapsulé cette attaque dans un formulaire piégé.
+Le token CSRF n'étant pas lié à la session, j'ai intercepté une requête de changement d'e-mail avec un premier compte via burp, récupéré la valeur du champ `csrf`, puis drop la requête. Après m'être connecté avec un autre compte, j'ai répété l'action et remplacé la valeur du token par celle enregistrée : le serveur a accepté la modification car il ne valide pas l'association token/session. J'ai encapsulé cette attaque dans un formulaire piégé.
 
 ```html
 <form action="https://0a49009d0379721b8051d56d00ad00ef.web-security-academy.net/my-account/change-email" method="post">
