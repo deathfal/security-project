@@ -64,7 +64,7 @@ Pour contourner la protection, on utilise un script qui récupère la page de pr
 # 4. CSRF where token is not tied to user session
 Link: https://portswigger.net/web-security/csrf/lab-token-not-tied-to-user-session
 
-drLe token CSRF n'étant pas lié à la session, j'ai intercepté une requête de changement d'e-mail légitime avec un premier compte, récupéré la valeur du champ `csrf`, puis drop la requête. Après m'être connecté avec un autre compte, j'ai répété l'action et remplacé la valeur du token par celle enregistrée : le serveur a accepté la modification car il ne valide pas l'association token/session. J'ai encapsulé cette attaque dans un formulaire piégé.
+Le token CSRF n'étant pas lié à la session, j'ai intercepté une requête de changement d'e-mail légitime avec un premier compte, récupéré la valeur du champ `csrf`, puis drop la requête. Après m'être connecté avec un autre compte, j'ai répété l'action et remplacé la valeur du token par celle enregistrée : le serveur a accepté la modification car il ne valide pas l'association token/session. J'ai encapsulé cette attaque dans un formulaire piégé.
 
 ```html
 <form action="https://0a49009d0379721b8051d56d00ad00ef.web-security-academy.net/my-account/change-email" method="post">
