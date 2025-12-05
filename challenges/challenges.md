@@ -7,7 +7,7 @@
 - [6. JWT - Jeton révoqué](#6-jwt---jeton-révoqué)
 - [7. SQL injection - Error](#7-sql-injection---error)
 - [8. Injection de commande - Contournement de filtre](#8-injection-de-commande---contournement-de-filtre)
-- [10. Server-side template injection (unknown language)](#10-server-side-template-injection-unknown-language)
+- [10. Server-side template injection](#10-server-side-template-injection)
 
 # 1. File path traversal - Null byte bypass
 Link: https://portswigger.net/web-security/file-path-traversal/lab-validate-file-extension-null-byte-bypass
@@ -224,7 +224,7 @@ Cette requête a été acceptée et mon statut utilisateur a été modifié en a
 J'ai ensuite pu accéder à l'endpoint /api/flag pour récupérer le flag de validation.
 
 Le flag obtenu confirme la vulnérabilité : la documentation Swagger ne montrait que la méthode GET pour /api/user, mais la méthode PUT était disponible et vulnérable à l'injection de masse sans validation appropriée des champs status.
-# 10. Server-side template injection (unknown language)
+# 10. Server-side template injection
 Link: https://portswigger.net/web-security/server-side-template-injection
 
 Après avoir déclenché une erreur sur la page produit en cliquant sur plus de details sur l'un des produits., j'ai testé une chaine de characteres d'exploit ssti  https://github.com/payloadbox/ssti-payloads `{{5*5}}` dans le paramètre `message` et dans la reponse on voit que l'app contient l'utilisation de Handlebars côté serveur via node. En important le payload d'exploit Handlebars https://gist.github.com/vandaimer/b92cdda62cf731c0ca0b05a5acf719b2 qui permet via faille de Handlbars d'executer des commandes shell sur le serveur je l'ai modifié pour executer ls -la pour verifier la presence de morale.txt puis j'ai modifié la commande pour supprimer le fichier avec rm morale.txt et verifier la reussite en faisant une autre fois un ls -la.
